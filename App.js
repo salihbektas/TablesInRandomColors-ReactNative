@@ -1,31 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const {height: HEIGHT, width: WIDTH} = Dimensions.get("screen");
+const {width: WIDTH} = Dimensions.get("screen");
+
+const EDGE = 10;
 
 export default function App() {
-  const EDGE = 10;
-
-  const digits = [
-    "0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"
-  ];
 
 
-  let colorArray = Array(Math.ceil(HEIGHT/EDGE));
+  let colorArray = Array(Math.ceil(WIDTH/EDGE));
 
   for(let i = 0; i < colorArray.length; ++i)
     colorArray[i] = Array(Math.ceil(WIDTH/EDGE));
   
 
   function randomColorGenerator(){
-    let color = "#";
+    let r, g, b;
 
-    for(let i = 0; i < 6; ++i){
-      color += digits[Math.floor(Math.random() * 16)];
-    }
+    r = Math.floor(Math.random() * 256);
+    g = Math.floor(Math.random() * 256);
+    b = Math.floor(Math.random() * 256);
 
-    return color;
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  const renderItem = (color) =>{
+    return(<View style={{...styles.atom, backgroundColor:color.item.color}} />);
   }
 
   const [colors, setColors] = useState([]);
@@ -34,30 +36,42 @@ export default function App() {
     let newArr = [...colorArray];
     for(let i = 0; i < colorArray.length; ++i){
       for(let j = 0; j < colorArray[i].length; ++j){
-        newArr[i][j] = randomColorGenerator();
+        newArr[i][j] = {color:randomColorGenerator(), id:`${i}${j}`};
       }
     }
-
     setColors(newArr);
   }, []);
 
   return (
-    <View style={styles.page}>
+    <SafeAreaView style={styles.page}>
       {colors.map((row, index1) => 
         <View style={styles.row} key={index1}>
-          {row.map((item, index) => <View style={{height: EDGE, aspectRatio: 1, backgroundColor: item}} key={index} />)}
+          <FlatList
+            data={row}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            horizontal={true}
+            getItemLayout={(data, index) => (
+              {length: EDGE, offset: EDGE * index, index}
+            )}
+          />
         </View>
       )}
-    </View>
+      <StatusBar style="dark" />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#CCC',
   },
   row: {
     flexDirection: "row",
+  },
+  atom: {
+    height: EDGE,
+    aspectRatio: 1,
   }
 });
