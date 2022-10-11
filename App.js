@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const {width: WIDTH} = Dimensions.get("screen");
@@ -30,9 +30,7 @@ export default function App() {
     return(<View style={{...styles.atom, backgroundColor:color.item.color}} />);
   }
 
-  const [colors, setColors] = useState([]);
-
-  useEffect(()=>{
+  function generateTable(){
     let newArr = [...colorArray];
     for(let i = 0; i < colorArray.length; ++i){
       for(let j = 0; j < colorArray[i].length; ++j){
@@ -40,6 +38,12 @@ export default function App() {
       }
     }
     setColors(newArr);
+  }
+
+  const [colors, setColors] = useState([]);
+
+  useEffect(()=>{
+    generateTable();
   }, []);
 
   return (
@@ -57,6 +61,10 @@ export default function App() {
           />
         </View>
       )}
+
+      <Pressable onPress={generateTable} style={styles.button}>
+        <Text>Generate</Text>
+      </Pressable>
       <StatusBar style="dark" />
     </SafeAreaView>
   );
@@ -73,5 +81,14 @@ const styles = StyleSheet.create({
   atom: {
     height: EDGE,
     aspectRatio: 1,
-  }
+  },
+  button:{
+    marginTop:40, 
+    paddingVertical:10, 
+    borderRadius:6, 
+    backgroundColor:"green", 
+    width:"40%", 
+    alignSelf:"center", 
+    alignItems:"center",
+  },
 });
