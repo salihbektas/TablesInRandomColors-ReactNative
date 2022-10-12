@@ -2,19 +2,14 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Slider from '@react-native-community/slider';
 
 const {width: WIDTH} = Dimensions.get("screen");
 
-const EDGE = 10;
+let edge = 36;
+let edgeValues = [10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180];
 
 export default function App() {
-
-
-  let colorArray = Array(Math.ceil(WIDTH/EDGE));
-
-  for(let i = 0; i < colorArray.length; ++i)
-    colorArray[i] = Array(Math.ceil(WIDTH/EDGE));
-  
 
   function randomColorGenerator(){
     let r, g, b;
@@ -27,17 +22,22 @@ export default function App() {
   }
 
   const renderItem = (color) =>{
-    return(<View style={{...styles.atom, backgroundColor:color.item.color}} />);
+    return(<View style={{ height: edge, aspectRatio: 1, backgroundColor:color.item.color}} />);
   }
 
   function generateTable(){
-    let newArr = [...colorArray];
+
+    let colorArray = Array(Math.ceil(WIDTH/edge));
+
+    for(let i = 0; i < colorArray.length; ++i)
+      colorArray[i] = Array(Math.ceil(WIDTH/edge));
+
     for(let i = 0; i < colorArray.length; ++i){
       for(let j = 0; j < colorArray[i].length; ++j){
-        newArr[i][j] = {color:randomColorGenerator(), id:`${i}${j}`};
+        colorArray[i][j] = {color:randomColorGenerator(), id:`${i}${j}`};
       }
     }
-    setColors(newArr);
+    setColors(colorArray);
   }
 
   const [colors, setColors] = useState([]);
@@ -56,11 +56,22 @@ export default function App() {
             keyExtractor={item => item.id}
             horizontal={true}
             getItemLayout={(data, index) => (
-              {length: EDGE, offset: EDGE * index, index}
+              {length: edge, offset: edge * index, index}
             )}
           />
         </View>
       )}
+
+      <Slider 
+        style={{width: "80%", height: 40, alignSelf:"center", marginTop: 20}}
+        minimumValue={0}
+        maximumValue={edgeValues.length-1}
+        step={1}
+        value={7}
+        minimumTrackTintColor="#FFFFFF"
+        maximumTrackTintColor="#000000"
+        onValueChange={ value => edge=edgeValues[edgeValues.length-value-1]}
+      />
 
       <Pressable onPress={generateTable} style={styles.button}>
         <Text>Generate</Text>
@@ -77,10 +88,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-  },
-  atom: {
-    height: EDGE,
-    aspectRatio: 1,
   },
   button:{
     marginTop:40, 
