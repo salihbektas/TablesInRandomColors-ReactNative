@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 
@@ -68,14 +68,15 @@ export default function App() {
         maximumValue={edgeValues.length-1}
         step={1}
         value={7}
-        minimumTrackTintColor="#FFFFFF"
+        minimumTrackTintColor="#24AFC1"
         maximumTrackTintColor="#000000"
+        thumbTintColor="#FCCF47"
         onValueChange={ value => edge=edgeValues[edgeValues.length-value-1]}
       />
 
-      <Pressable onPress={generateTable} style={styles.button}>
+      <TouchableOpacity onPress={generateTable} style={styles.button}>
         <Text>Generate</Text>
-      </Pressable>
+      </TouchableOpacity>
       <StatusBar style="dark" />
     </SafeAreaView>
   );
@@ -84,7 +85,7 @@ export default function App() {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#CCC',
+    backgroundColor: '#F8F8F8',
   },
   row: {
     flexDirection: "row",
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     marginTop:40, 
     paddingVertical:10, 
     borderRadius:6, 
-    backgroundColor:"green", 
+    backgroundColor:"#1795A8", 
     width:"40%", 
     alignSelf:"center", 
     alignItems:"center",
