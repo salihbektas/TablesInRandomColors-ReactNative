@@ -3,6 +3,11 @@ import { useEffect, useState } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
+import * as SplashScreen from 'expo-splash-screen';
+
+
+SplashScreen.preventAutoHideAsync();
+
 
 const {width: WIDTH} = Dimensions.get("screen");
 
@@ -47,7 +52,7 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.page}>
+    <SafeAreaView style={styles.page} onLayout={SplashScreen.hideAsync}>
       {colors.map((row, index1) => 
         <View style={styles.row} key={index1}>
           <FlatList
