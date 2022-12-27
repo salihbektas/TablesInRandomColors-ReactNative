@@ -8,14 +8,10 @@ import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
 
-
-let edgeValues = [10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180];
-
 export default function App() {
 
-  const {width} = useWindowDimensions();
   const [colors, setColors] = useState([]);
-  const edge = useRef(edgeValues[7])
+  const tableResolution = useRef(15)
   
   function randomColorGenerator(){
     let r, g, b;
@@ -27,22 +23,19 @@ export default function App() {
     return `rgb(${r}, ${g}, ${b})`;
   }
 
-  const renderItem = (color) =>{
-    return(<View style={styles.cell(color, edge.current)} />);
-  }
-
   function generateTable(){
 
-    let colorArray = Array(Math.ceil(width/edge.current));
+    let colorArray = Array(tableResolution.current);
 
     for(let i = 0; i < colorArray.length; ++i)
-      colorArray[i] = Array(Math.ceil(width/edge.current));
+      colorArray[i] = Array(tableResolution.current);
 
     for(let i = 0; i < colorArray.length; ++i){
       for(let j = 0; j < colorArray[i].length; ++j){
         colorArray[i][j] = {color:randomColorGenerator(), id:`${i}${j}`};
       }
     }
+
     setColors(colorArray);
   }
   
@@ -54,30 +47,23 @@ export default function App() {
     <SafeAreaView style={styles.page} onLayout={SplashScreen.hideAsync}>
       <StatusBar style="dark" />
 
-      {colors.map((row, index1) => 
-        <View style={styles.row} key={index1}>
-          <FlatList
-            data={row}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            horizontal={true}
-            getItemLayout={(data, index) => (
-              {length: edge.current, offset: edge.current * index, index}
-            )}
-          />
+      {colors.map((row, index) => 
+        <View style={styles.row(tableResolution.current)} key={index}>
+          {row.map((cell, index) => 
+            <View style={styles.cell(100/tableResolution.current, cell.color)} key={index}/>)}
         </View>
       )}
 
       <Slider 
         style={styles.slider}
-        minimumValue={0}
-        maximumValue={edgeValues.length-1}
+        minimumValue={1}
+        maximumValue={30}
         step={1}
-        value={7}
+        value={15}
         minimumTrackTintColor="#24AFC1"
         maximumTrackTintColor="#000000"
         thumbTintColor="#FCCF47"
-        onValueChange={ value => edge.current = edgeValues[edgeValues.length-value-1] }
+        onValueChange={value => tableResolution.current = value}
       />
 
       <TouchableOpacity onPress={generateTable} style={styles.button}>
@@ -93,14 +79,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
   },
 
-  row: {
+  row: (tableResolution) => ({
     flexDirection: "row",
-  },
+    width: "100%",
+    aspectRatio: tableResolution,
+  }),
 
-  cell: (color, edge) => ({
-    height: edge, 
-    aspectRatio: 1, 
-    backgroundColor: color.item.color
+  cell: (width, color) => ({
+    height:"100%",
+    width:`${width}%`,
+    backgroundColor: color,
   }),
 
   slider: {
