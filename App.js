@@ -50,9 +50,14 @@ export default function App() {
       {colors.map((row, index) => 
         <View style={styles.row(tableResolution.current)} key={index}>
           {row.map((cell, index) => 
-            <View style={styles.cell(100/tableResolution.current, cell.color)} key={index}/>)}
+            <View style={styles.cell(100/tableResolution.current, cell.color)} key={index}/>
+          )}
         </View>
       )}
+
+      <Text style={styles.resolutionText}>
+        {"Table Resolution: " + tableResolution.current.toString().padStart(2, "\u2007") + " x " + tableResolution.current.toString().padEnd(2, "\u2007")}
+      </Text>
 
       <Slider 
         style={styles.slider}
@@ -67,7 +72,7 @@ export default function App() {
       />
 
       <TouchableOpacity onPress={generateTable} style={styles.button}>
-        <Text>Generate</Text>
+        <Text style={styles.buttonText}>Generate</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -91,6 +96,13 @@ const styles = StyleSheet.create({
     backgroundColor: color,
   }),
 
+  resolutionText: {
+    fontSize: 28,
+    fontWeight: "600",
+    alignSelf:"center",
+    marginTop: 18
+  },
+
   slider: {
     width: "80%",
     height: 40,
@@ -107,4 +119,9 @@ const styles = StyleSheet.create({
     alignSelf:"center", 
     alignItems:"center",
   },
+
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "500"
+  }
 });
