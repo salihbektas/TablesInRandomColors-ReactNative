@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
@@ -10,8 +10,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
 
-  const [colors, setColors] = useState([]);
   const tableResolution = useRef(15)
+  const [colors, setColors] = useState(() => generateTable());
   
   function randomColorGenerator(){
     let r, g, b;
@@ -36,13 +36,9 @@ export default function App() {
       }
     }
 
-    setColors(colorArray);
+    return colorArray;
   }
-  
-  useEffect(()=>{
-    generateTable();
-  }, []);
-  
+
   return (
     <SafeAreaView style={styles.page} onLayout={SplashScreen.hideAsync}>
       <StatusBar style="dark" />
@@ -71,7 +67,7 @@ export default function App() {
         onValueChange={value => tableResolution.current = value}
       />
 
-      <TouchableOpacity onPress={generateTable} style={styles.button}>
+      <TouchableOpacity onPress={() => setColors(generateTable())} style={styles.button}>
         <Text style={styles.buttonText}>Generate</Text>
       </TouchableOpacity>
     </SafeAreaView>
