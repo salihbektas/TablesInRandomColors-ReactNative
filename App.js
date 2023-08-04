@@ -32,7 +32,7 @@ export default function App() {
 
     for(let i = 0; i < colorArray.length; ++i){
       for(let j = 0; j < colorArray[i].length; ++j){
-        colorArray[i][j] = {color:randomColorGenerator(), id:`${i}${j}`};
+        colorArray[i][j] = randomColorGenerator();
       }
     }
 
@@ -46,7 +46,7 @@ export default function App() {
       {colors.map((row, index) => 
         <View style={styles.row(tableResolution.current)} key={index}>
           {row.map((cell, index) => 
-            <View style={styles.cell(100/tableResolution.current, cell.color)} key={index}/>
+            <View style={styles.cell(100/tableResolution.current, cell)} key={index}/>
           )}
         </View>
       )}
