@@ -1,19 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import * as SplashScreen from 'expo-splash-screen';
 
-
 SplashScreen.preventAutoHideAsync();
 
-export default function App() {
+const { width } = Dimensions.get('screen');
 
-  const tableResolution = useRef(15)
-  const [colors, setColors] = useState(() => generateTable());
-  
-  function randomColorGenerator(){
+export default function App() {
+  const [resolution, setResulation] = useState(15);
+  const [colors, setColors] = useState(() => generateTable(resolution));
+  const [opacity, setOpacity] = useState(0);
+
+  function randomColorGenerator() {
     let r, g, b;
 
     r = Math.floor(Math.random() * 256);
@@ -23,15 +30,14 @@ export default function App() {
     return `rgb(${r}, ${g}, ${b})`;
   }
 
-  function generateTable(){
+  function generateTable(resolution) {
+    let colorArray = Array(resolution);
 
-    let colorArray = Array(tableResolution.current);
+    for (let i = 0; i < colorArray.length; ++i)
+      colorArray[i] = Array(resolution);
 
-    for(let i = 0; i < colorArray.length; ++i)
-      colorArray[i] = Array(tableResolution.current);
-
-    for(let i = 0; i < colorArray.length; ++i){
-      for(let j = 0; j < colorArray[i].length; ++j){
+    for (let i = 0; i < colorArray.length; ++i) {
+      for (let j = 0; j < colorArray[i].length; ++j) {
         colorArray[i][j] = randomColorGenerator();
       }
     }
@@ -43,31 +49,46 @@ export default function App() {
     <SafeAreaView style={styles.page} onLayout={SplashScreen.hideAsync}>
       <StatusBar style="dark" />
 
-      {colors.map((row, index) => 
-        <View style={styles.row(tableResolution.current)} key={index}>
-          {row.map((cell, index) => 
-            <View style={styles.cell(100/tableResolution.current, cell)} key={index}/>
-          )}
+      {colors.map((row, index) => (
+        <View style={styles.row(resolution)} key={index}>
+          {row.map((cell, index) => (
+            <View style={styles.cell(100 / resolution, cell)} key={index} />
+          ))}
         </View>
-      )}
+      ))}
 
       <Text style={styles.resolutionText}>
-        {"Table Resolution: " + tableResolution.current.toString().padStart(2, "\u2007") + " x " + tableResolution.current.toString().padEnd(2, "\u2007")}
+        {'Table Resolution: ' +
+          resolution.toString().padStart(2, '\u2007') +
+          ' x ' +
+          resolution.toString().padEnd(2, '\u2007')}
       </Text>
 
-      <Slider 
+      <View style={styles.tooltip(opacity, resolution)}>
+        <Text style={styles.tooptipText}>{resolution}</Text>
+      </View>
+
+      <Slider
         style={styles.slider}
         minimumValue={1}
         maximumValue={30}
         step={1}
-        value={15}
+        value={resolution}
         minimumTrackTintColor="#24AFC1"
         maximumTrackTintColor="#000000"
         thumbTintColor="#FCCF47"
-        onValueChange={value => tableResolution.current = value}
+        onValueChange={(value) => {
+          setResulation(value);
+          setColors(generateTable(value));
+        }}
+        onSlidingStart={() => setOpacity(1)}
+        onSlidingComplete={() => setOpacity(0)}
       />
 
-      <TouchableOpacity onPress={() => setColors(generateTable())} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => setColors(generateTable(resolution))}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Generate</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -81,43 +102,62 @@ const styles = StyleSheet.create({
   },
 
   row: (tableResolution) => ({
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
     aspectRatio: tableResolution,
   }),
 
   cell: (width, color) => ({
-    height:"100%",
-    width:`${width}%`,
+    height: '100%',
+    width: `${width}%`,
     backgroundColor: color,
   }),
 
   resolutionText: {
     fontSize: 28,
-    fontWeight: "600",
-    alignSelf:"center",
-    marginTop: 18
+    fontWeight: '600',
+    alignSelf: 'center',
+    marginTop: 18,
+  },
+
+  tooltip: (opacity, resolution) => ({
+    backgroundColor: '#24AFC1',
+    justifyContent: 'center',
+    width: 50,
+    height: 40,
+    borderRadius: 8,
+    opacity: opacity,
+    transform: [
+      {
+        translateX: (0.14 + 0.0248 * (resolution - 1)) * width - 25,
+      },
+    ],
+  }),
+
+  tooptipText: {
+    textAlign: 'center',
+    fontSize: 28,
+    fontWeight: '600',
   },
 
   slider: {
-    width: "80%",
+    width: '80%',
     height: 40,
-    alignSelf:"center",
-    marginTop: 20
+    alignSelf: 'center',
   },
 
-  button:{
-    marginTop:40, 
-    paddingVertical:10, 
-    borderRadius:6, 
-    backgroundColor:"#1795A8", 
-    width:"40%", 
-    alignSelf:"center", 
-    alignItems:"center",
+  button: {
+    marginTop: 40,
+    paddingVertical: 10,
+    borderRadius: 6,
+    backgroundColor: '#1795A8',
+    width: '40%',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
 
   buttonText: {
     fontSize: 16,
-    fontWeight: "500"
-  }
+    fontWeight: '500',
+  },
 });
