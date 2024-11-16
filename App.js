@@ -59,9 +59,9 @@ export default function App() {
 
       <Text style={styles.resolutionText}>
         {'Table Resolution: ' +
-          resolution.toString().padStart(2, '\u2007') +
+          colors.length.toString().padStart(2, '\u2007') +
           ' x ' +
-          resolution.toString().padEnd(2, '\u2007')}
+          colors.length.toString().padEnd(2, '\u2007')}
       </Text>
 
       <View style={styles.tooltip(opacity, resolution)}>
@@ -77,12 +77,12 @@ export default function App() {
         minimumTrackTintColor="#24AFC1"
         maximumTrackTintColor="#000000"
         thumbTintColor="#FCCF47"
-        onValueChange={(value) => {
-          setResulation(value);
-          setColors(generateTable(value));
-        }}
+        onValueChange={(value) => setResulation(value)}
         onSlidingStart={() => setOpacity(1)}
-        onSlidingComplete={() => setOpacity(0)}
+        onSlidingComplete={() => {
+          setOpacity(0);
+          setColors(generateTable(resolution));
+        }}
       />
 
       <TouchableOpacity
