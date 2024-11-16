@@ -50,9 +50,9 @@ export default function App() {
       <StatusBar style="dark" />
 
       {colors.map((row, index) => (
-        <View style={styles.row(resolution)} key={index}>
+        <View style={styles.row(colors.length)} key={index}>
           {row.map((cell, index) => (
-            <View style={styles.cell(100 / resolution, cell)} key={index} />
+            <View style={styles.cell(100 / colors.length, cell)} key={index} />
           ))}
         </View>
       ))}
